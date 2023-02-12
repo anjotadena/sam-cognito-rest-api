@@ -56,7 +56,6 @@ Resources:
       Policies:
         PasswordPolicy:
           MinimumLength: 8
-        
       KeySchema:
         -
           Name: email
@@ -139,7 +138,7 @@ Resources:
         AddDefaultAuthorizerToCorsPreflight: false
         Authorizers:
           AppAuthorizer:
-            UserPoolArn: !GetAtt AppUserPool.Arn
+            UserPoolArn: !GetAtt CognitoUserPool.Arn
             AuthorizationScopes:
               - "aws.cognito.signin.user.admin"
 
@@ -191,7 +190,7 @@ Outputs:
     Value: !Sub "https://${ApiGatewayApi}.execute-api.${AWS::Region}.amazonaws.com/v1"
   UserPoolId:
     Description: "The ID of the UserPool for use when running the environment setup script"
-    Value: !Ref AppUserPool
+    Value: !Ref CognitoUserPool
   UserPoolClientId:
     Description: "The AWS ClientId that should be used in your authentication configuration"
-    Value: !Ref AppUserPoolClient
+    Value: !Ref CognitoUserPoolClient
