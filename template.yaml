@@ -28,12 +28,6 @@ Resources:
         - 
           AttributeName: "id"
           AttributeType: "S"
-        -
-          AttributeName: "title"
-          AttributeType: "S"
-        -
-          AttributeName: "description"
-          AttributeType: "S"
       KeySchema: 
         - 
           AttributeName: "id"
@@ -56,12 +50,6 @@ Resources:
       Policies:
         PasswordPolicy:
           MinimumLength: 8
-      KeySchema:
-        -
-          Name: email
-          AttributeDataType: string
-          Mutable: false
-          Required: true
 
   # Cognito Setup User pool client
   CognitoUserPoolClient:
@@ -85,7 +73,7 @@ Resources:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
-        Version: "2021-10-17"
+        Version: "2012-10-17"
         Statement:
           -
             Effect: "Allow"
@@ -98,19 +86,19 @@ Resources:
                 "cognito-identity.amazonaws.com:aud": !Ref AppIdentityPool
               "ForAnyValue:StringLike":
                 "cognito-identity.amazonaws.com:amr": authenticated
-            Policies:
+      Policies:
+        - 
+          PolicyName: "AppCognitoAuthorizedPolicy"
+          PolicyDocument: 
+            Version: "2012-10-17"
+            Statement: 
               - 
-                PolicyName: "AppCognitoAuthorizedPolicy"
-                PolicyDocument: 
-                  Version: "2012-10-17"
-                  Statement: 
-                    - 
-                      Effect: "Allow"
-                      Action:
-                        - "mobileanalytics:PutEvents"
-                        - "cognito-sync:*"
-                        - "cognito-identity:*"
-                      Resource: "*"
+                Effect: "Allow"
+                Action:
+                  - "mobileanalytics:PutEvents"
+                  - "cognito-sync:*"
+                  - "cognito-identity:*"
+                Resource: "*"
   
   # Assigns the roles to the Identity Pool
   AppIdentityPoolRoleMapping:
@@ -146,7 +134,7 @@ Resources:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
       FunctionName: todoFunction
-      CodeUri: todos/
+      CodeUri: src/modules/todos/
       Handler: app.lambdaHandler
       Runtime: nodejs18.x
       MemorySize: 128
@@ -181,6 +169,38 @@ Resources:
         Sourcemap: true
         EntryPoints: 
         - app.ts
+        External:
+        - 'aws-sdk'
+
+  # Auth function
+  AuthFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      FunctionName: AuthFunction
+      CodeUri: src/modules/auth/register/
+      Handler: handler.lambdaHandler
+      Runtime: nodejs18.x
+      MemorySize: 128
+      Architectures:
+        - x86_64
+      Description: Register user.
+      Events:
+        RootApi:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Auth:
+              Authorizer: NONE
+            Path: /auth/register
+            Method: POST
+            RestApiId: !Ref ApiGatewayApi
+    Metadata: # Manage esbuild properties
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        Sourcemap: true
+        EntryPoints: 
+        - handler.ts
         External:
         - 'aws-sdk'
 
