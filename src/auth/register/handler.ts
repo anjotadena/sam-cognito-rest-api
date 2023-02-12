@@ -13,10 +13,10 @@ export const lambdaHandler = async (event: APIGatewayProxyEvent): Promise<APIGat
     try {
         return {
             statusCode: 200,
-            body: JSON.stringify(event),
+            body: JSON.stringify({ x: 'TEST' }),
         };
     } catch (err) {
-        console.log(err);
+        console.log('X', err);
         return {
             statusCode: 500,
             body: JSON.stringify(event),
