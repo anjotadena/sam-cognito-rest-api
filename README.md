@@ -125,3 +125,9 @@ aws cloudformation delete-stack --stack-name sam-cognito-rest-api
 See the [AWS SAM developer guide](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html) for an introduction to SAM specification, the SAM CLI, and serverless application concepts.
 
 Next, you can use AWS Serverless Application Repository to deploy ready to use Apps that go beyond hello world samples and learn how authors developed their applications: [AWS Serverless Application Repository main page](https://aws.amazon.com/serverless/serverlessrepo/)
+
+## Commands you can use next
+=========================
+[*] Create pipeline: cd sam-cognito-rest-api && sam pipeline init --bootstrap
+[*] Validate SAM template: cd sam-cognito-rest-api && sam validate
+[*] Test Function in the Cloud: cd sam-cognito-rest-api && sam sync --stack-name {stack-name} --watch
